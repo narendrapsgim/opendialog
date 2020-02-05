@@ -15,7 +15,8 @@ return [
      * Custom interpreters registered in the format
      */
     'custom_interpreters' => [
-//    \OpenDialogAi\InterpreterEngine\tests\Interpreters\DummyInterpreter::class
+//    \OpenDialogAi\InterpreterEngine\tests\Interpreters\DummyInterpreter::class,
+    \App\Bot\Interpreter\DialogFlowInterpreter::class
     ],
 
     'default_interpreter' => 'interpreter.core.callbackInterpreter',
