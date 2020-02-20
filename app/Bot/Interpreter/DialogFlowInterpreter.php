@@ -4,6 +4,7 @@ namespace App\Bot\Interpreter;
 
 use Illuminate\Support\Facades\Log;
 use OpenDialogAi\ContextEngine\Facades\AttributeResolver;
+use OpenDialogAi\ContextEngine\Facades\ContextService;
 use OpenDialogAi\Core\Conversation\Intent;
 use OpenDialogAi\Core\Utterances\UtteranceInterface;
 use OpenDialogAi\InterpreterEngine\BaseInterpreter;
@@ -17,7 +18,8 @@ class DialogFlowInterpreter extends BaseInterpreter
     public function interpret(UtteranceInterface $utterance): array
     {
         $dfClient = new DialogFlowClient();
-        $intent = $dfClient->detectIntent('opendialogtester-vbwobs', $utterance->getText(), null);
+        $sessionId = ContextService::getUserContext()->getUserId();
+        $intent = $dfClient->detectIntent($utterance->getText(), $sessionId);
 
         Log::info(sprintf('got intent %s', $intent));
 

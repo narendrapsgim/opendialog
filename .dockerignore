@@ -11,6 +11,7 @@ dgraph
 /public/fonts/vendor
 /public/vendor
 /public/images/vendor
+/resources/credentials
 /resources/assets/opendialog
 /resources/views/vendor/pingpong
 update-web-chat.sh
