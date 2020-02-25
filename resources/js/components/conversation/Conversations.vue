@@ -80,6 +80,10 @@
                   <i class="fa fa-download"></i>
                 </button>
               </template>
+
+              <button class="btn btn-primary ml-2" data-toggle="tooltip" data-placement="top" title="Export" @click.stop="exportConversation(conversation)">
+                <i class="fa fa-cloud-download"></i>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -226,6 +230,18 @@
           } else {
             this.errorMessage = 'Sorry, I wasn\'t able to deactivate this conversation from DGraph.';
           }
+        },
+      );
+    },
+    exportConversation(conversation) {
+      axios.get('/admin/api/conversation/' + conversation.id + '/export', { responseType: 'blob' }).then(
+        (response) => {
+          const url = window.URL.createObjectURL(response.data);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', conversation.name + '.zip');
+          document.body.appendChild(link);
+          link.click();
         },
       );
     },

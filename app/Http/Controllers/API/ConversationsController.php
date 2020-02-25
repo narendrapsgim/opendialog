@@ -13,8 +13,11 @@ use Illuminate\Support\Facades\Log;
 use OpenDialogAi\ConversationBuilder\Conversation;
 use OpenDialogAi\ConversationEngine\Rules\ConversationYAML;
 use OpenDialogAi\Core\Conversation\Conversation as ConversationNode;
+use OpenDialogAi\Core\Conversation\Intent;
+use OpenDialogAi\ResponseEngine\OutgoingIntent;
 use Spatie\Activitylog\Models\Activity;
 use Symfony\Component\Yaml\Yaml;
+use ZipStream\ZipStream;
 
 class ConversationsController extends Controller
 {
@@ -248,6 +251,62 @@ class ConversationsController extends Controller
         }
 
         return response()->noContent(200);
+    }
+
+
+    /**
+     * @param int $id
+     * @return Response
+     */
+    public function export(int $id)
+    {
+        /** @var Conversation $conversation */
+        $conversation = Conversation::find($id);
+
+        $fileName = $conversation->name . '.zip';
+
+        $zip = new ZipStream($fileName);
+
+        $stream = fopen('php://memory', 'r+');
+        fwrite($stream, $conversation->model);
+        rewind($stream);
+        $zip->addFileFromStream('conversation.' . strtolower($conversation->name) . '.yml', $stream);
+        fclose($stream);
+
+        $outgoingIntents = [];
+        $parsedConversation = $conversation->buildConversation();
+        /** @var Intent $intent */
+        foreach ($parsedConversation->getAllIntents() as $intent) {
+            $outgoingIntent = OutgoingIntent::where('name', $intent->getLabel())->with('messageTemplates')->first();
+            if ($outgoingIntent && !isset($outgoingIntents[$outgoingIntent->id])) {
+                $outgoingIntents[$outgoingIntent->id] = $outgoingIntent;
+            }
+        }
+
+        foreach ($outgoingIntents as $outgoingIntent) {
+            $outgoingIntentModel = "intent:\n  id: $outgoingIntent->name\n  conversation: $conversation->name";
+
+            if (!empty($outgoingIntent->messageTemplates)) {
+                $outgoingIntentModel .= "\n  message_templates:";
+
+                foreach ($outgoingIntent->messageTemplates as $messageTemplate) {
+                    $outgoingIntentModel .= "\n    - name: '$messageTemplate->name'";
+                    $outgoingIntentModel .= "\n      message_markup: '$messageTemplate->message_markup'";
+                    if ($messageTemplate->conditions) {
+                        $conditions = preg_replace('/^/m', '      ', $messageTemplate->conditions);
+                        $outgoingIntentModel .= "\n$conditions";
+                    }
+                }
+            }
+
+            $stream = fopen('php://memory', 'r+');
+            fwrite($stream, $outgoingIntentModel);
+            rewind($stream);
+            $zip->addFileFromStream('intent.' . strtolower($outgoingIntent->name) . '.yml', $stream);
+            fclose($stream);
+        }
+
+        $zip->finish();
     }
 
 
