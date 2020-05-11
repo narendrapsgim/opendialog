@@ -1,9 +1,6 @@
 // Variables
 @import 'variables';
 
-// CoreUI Icons Set
-@import '~@coreui/icons/css/coreui-icons.min.css';
-
 // Font Awesome Icons Set
 $fa-font-path: '~font-awesome/fonts/';
 @import '~font-awesome/scss/font-awesome.scss';
@@ -21,31 +18,31 @@ $simple-line-font-path: '~simple-line-icons/fonts/';
 // CoreUI
 @import "~@coreui/coreui/scss/coreui";
 
-//IE fix for sticky footer
+// IE fix for sticky footer
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
   .app {
     height: 100%;
   }
 }
 
-.sidebar {
-  .nav-item {
-    max-width: 100%;
-  }
-  .nav-dropdown .nav-link {
-    max-width: 100%;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
+.c-sidebar .c-sidebar-brand {
+  background: #fff;
+  justify-content: left;
+  font-size: 1.125rem;
+  color: #3490dc;
 }
 
-.img-avatar {
+.c-avatar-img {
   border-radius: 0;
 }
 
+.bg-primary {
+  background-color: #3490dc !important;
+  color: #fff;
+}
+
 .actions {
-    .disabled {
-        cursor: not-allowed;
-    }
+  .disabled {
+    cursor: not-allowed;
+  }
 }

@@ -12,12 +12,16 @@ import router from '@/router/index';
 
 import App from '@/views/App';
 import BootstrapVue from 'bootstrap-vue';
+import CoreuiVue from '@coreui/vue';
 import VueCookies from 'vue-cookies';
+
+import * as icons from '@coreui/icons/js';
 
 require('@/bootstrap');
 window.Vue = require('vue');
 
 window.Vue.use(BootstrapVue);
+window.Vue.use(CoreuiVue);
 window.Vue.use(VueCookies);
 
 /**
@@ -30,4 +34,5 @@ const { app } = new window.Vue({
   el: '#app',
   components: { App },
   router,
+  icons,
 });

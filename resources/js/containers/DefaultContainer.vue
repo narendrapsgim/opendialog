@@ -1,112 +1,49 @@
 <template>
-  <div class="app">
-    <AppHeader fixed>
-      <SidebarToggler class="d-lg-none" display="md" mobile />
-      <b-link class="navbar-brand" to="/admin">
-        <img class="navbar-brand-full" src="/images/logo.svg" width="89" height="25" alt="Opendialog Logo">
-        <span class="navbar-brand-full">Opendialog</span>
-        <img class="navbar-brand-minimized" src="/images/logo.svg" width="30" height="30" alt="Opendialog Logo">
-      </b-link>
-      <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen=true />
-      <b-navbar-nav class="d-md-down-none">
-        <b-nav-item v-for="item in navigationItems" class="px-3" :key="item.url" :to="item.url">
-          {{ item.title }}
-        </b-nav-item>
-      </b-navbar-nav>
-      <b-navbar-nav class="ml-auto">
-        <DefaultHeaderDropdownAccnt/>
-      </b-navbar-nav>
-    </AppHeader>
-    <div class="app-body">
-      <AppSidebar fixed>
-        <SidebarHeader/>
-        <SidebarForm/>
-        <SidebarNav :navItems="nav"></SidebarNav>
-        <SidebarFooter/>
-        <SidebarMinimizer/>
-      </AppSidebar>
-      <main class="main">
-        <div class="container-fluid mt-4">
-          <router-view></router-view>
-        </div>
-      </main>
-    </div>
-    <TheFooter>
-      <!--footer-->
-      <div>
-        <a href="https://opendialog.ai">OpenDialog</a>
-        <span class="ml-1">&copy; {{ new Date().getFullYear() }} Greenshoot Labs.</span>
+  <div class="c-app">
+    <TheSidebar :show="showSidebar" />
+    <CWrapper>
+      <TheHeader @toggleSidebar="showSidebar = !showSidebar" />
+      <div class="c-body">
+        <main class="c-main">
+          <CContainer fluid>
+            <transition name="fade">
+              <router-view></router-view>
+            </transition>
+          </CContainer>
+        </main>
+        <TheFooter/>
       </div>
-    </TheFooter>
+    </CWrapper>
   </div>
 </template>
 
 <script>
-import { Header as AppHeader, SidebarToggler, Sidebar as AppSidebar, SidebarFooter, SidebarForm, SidebarHeader, SidebarMinimizer, SidebarNav, Aside as AppAside, Footer as TheFooter } from '@coreui/vue';
-import DefaultHeaderDropdownAccnt from './DefaultHeaderDropdownAccnt';
+import TheSidebar from './TheSidebar';
+import TheHeader from './TheHeader';
+import TheFooter from './TheFooter';
 
 export default {
-  name: 'DefaultContainer',
+  name: 'TheContainer',
   components: {
-    AppHeader,
-    AppSidebar,
-    AppAside,
+    TheSidebar,
+    TheHeader,
     TheFooter,
-    DefaultHeaderDropdownAccnt,
-    SidebarForm,
-    SidebarFooter,
-    SidebarToggler,
-    SidebarHeader,
-    SidebarNav,
-    SidebarMinimizer,
   },
-  data () {
+  data() {
     return {
-      nav: [],
+      showSidebar: true,
     };
-  },
-  computed: {
-    navigationItems() {
-      return window.NavigationItems;
-    },
-  },
-  created() {
-    this.buildSidebarMenu();
-  },
-  methods: {
-    buildSidebarMenu() {
-      this.asyncForEach(this.navigationItems, async (item) => {
-        const navigationItem = {
-          name: item.title,
-          url: item.url,
-          icon: item.icon,
-        };
-
-        if (item.children) {
-          if (Array.isArray(item.children)) {
-            navigationItem.children = item.children;
-          } else {
-            navigationItem.children = await this.getChildren(item.children);
-          }
-        }
-
-        this.nav.push(navigationItem);
-      });
-    },
-    async getChildren(url) {
-      const promise = axios.get(url).then(
-        (response) => {
-          return response.data;
-        },
-      );
-
-      return await Promise.resolve(promise);
-    },
-    async asyncForEach(array, callback) {
-      for (let index = 0; index < array.length; index++) {
-        await callback(array[index], index, array);
-      }
-    },
   },
 };
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
