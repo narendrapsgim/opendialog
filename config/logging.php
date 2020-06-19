@@ -96,6 +96,12 @@ return [
             ],
         ],
 
+        'stackdriver' => [
+            'driver' => 'custom',
+            'via' => App\Logging\CreateStackdriverLogger::class,
+            'level' => 'debug',
+        ],
+
         'syslog' => [
             'driver' => 'syslog',
             'level' => 'debug',
