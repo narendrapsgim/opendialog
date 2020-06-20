@@ -34,7 +34,3 @@ build
 .php_cs.cache
 composer-dev.json
 composer-dev.lock
-database
-.circleci
-.githooks
-tests

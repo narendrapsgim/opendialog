@@ -27,3 +27,7 @@ storage/framework/views/*
 storage/logs/*
 set_up_done
 *.tar
+database
+.circleci
+.githooks
+tests

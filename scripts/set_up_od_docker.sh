@@ -11,7 +11,7 @@ php artisan vendor:publish --tag=od-config
 
 echo "Setting up the admin interface..."
 npm install -g yarn
-yarn install
+yarn install --production
 yarn run prod
 
 echo "Cleaning up install"
