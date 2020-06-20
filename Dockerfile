@@ -1,8 +1,9 @@
-FROM php:7.3-fpm
+FROM php:7.3-fpm-alpine
 
 # Install dependencies
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
-    apt-get update && apt-get install -y \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
     nodejs \
     build-essential \
     mariadb-client \
@@ -19,7 +20,8 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
     curl \
     nginx && \
     npm install -g npm && \
-    /etc/init.d/nginx start
+    /etc/init.d/nginx start && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install extensions
 RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
@@ -36,8 +38,7 @@ WORKDIR /var/www
 COPY --chown=www-data:www-data . /var/www
 
 # Copy the nginx conf file
-RUN rm /etc/nginx/sites-enabled/default
-RUN rm /etc/nginx/sites-available/default
+RUN rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
 
 COPY --chown=www-data:www-data docker/nginx-conf/docker-app.conf /etc/nginx/sites-available
 
@@ -45,8 +46,7 @@ RUN ln -s /etc/nginx/sites-available/docker-app.conf /etc/nginx/sites-enabled/do
 
 RUN chown -R www-data:www-data /var/www
 
-RUN chmod +x ./scripts/set_up_od_docker.sh
-RUN ./scripts/set_up_od_docker.sh
+RUN chmod +x ./scripts/set_up_od_docker.sh && ./scripts/set_up_od_docker.sh
 
 RUN chmod -R 755 /var/www/storage
 
